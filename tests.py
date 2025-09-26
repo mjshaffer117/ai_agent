@@ -1,25 +1,30 @@
-from functions.get_files_info import get_files_info
+from functions.get_file_content import get_file_content
 
 def run_manual_tests():
     # Test 1: Current Directory
-    print("Results for current directory:")
-    results = get_files_info("calculator", ".")
+    #print("Results for lorem.txt:")
+    #results = get_file_content("calculator", "lorem.txt")
+    #print(f"{results}")
+
+    # Test 2: 
+    print("Results for 'main.py'")
+    results = get_file_content("calculator", "main.py")
     print(f"{results}")
 
-    # Test 2: 'pkg' Directory
-    print("Results for 'pkg' directory:")
-    results = get_files_info("calculator", "pkg")
+    # Test 3: 
+    print("Results for 'pkg/calculator.py'")
+    results = get_file_content("calculator", "pkg/calculator.py")
     print(f"{results}")
 
-    # Test 3: '/bin' Directory
-    print("Results for '/bin' directory")
-    results = get_files_info("calculator", "/bin")
+    # Test 4: 
+    print("Results for '/bin/cat'")
+    results = get_file_content("calculator", "/bin/cat")
     print(f"{results}")
 
-    # Test 4: '../' Directory
-    print("Results for '../' directory")
-    results = get_files_info("calculator", "../")
+    # Test 5: 
+    print("Results for 'pkg/does_not_exist.py'")
+    results = get_file_content("calculator", "pkg/does_not_exist.py")
     print(f"{results}")
-    
+
 if __name__ == "__main__":
     run_manual_tests()
