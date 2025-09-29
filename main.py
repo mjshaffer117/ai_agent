@@ -1,7 +1,7 @@
 import os, sys
 
 from prompts import system_prompt
-from functions.call_function import available_functions
+from functions.call_function import available_functions, call_function
 
 from dotenv import load_dotenv
 from google import genai
@@ -35,10 +35,16 @@ def main():
         print(f'\nPrompt tokens: {response.usage_metadata.prompt_token_count}')
         print(f'\nResponse tokens: {response.usage_metadata.candidates_token_count}')
     
-    function_specifications = response.function_calls
-    if function_specifications:
-        for function_spec in function_specifications:
-            print(f"Calling function: {function_spec.name}({function_spec.args})")
+    function_call_part = response.function_calls
+    if function_call_part:
+        for function_call in function_call_part:
+            ##print(f"Calling function: {function_call.name}({function_call.args})")
+            try:
+                function_call_result = call_function(function_call, verbose)
+                if verbose:
+                    print(f"-> {function_call_result.parts[0].function_response.response}")
+            except Exception as e:
+                return f'Error: {str(e)}'
     else:
         print(response.text)
 
