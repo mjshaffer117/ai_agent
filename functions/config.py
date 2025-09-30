@@ -1,3 +1,5 @@
 # Constants
 
 MAX_CHAR_LEN = 10000
+WORKING_DIRECTORY = "./calculator"
+MAX_ITERATIONS = 20

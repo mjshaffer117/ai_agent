@@ -1,4 +1,5 @@
 from google.genai import types
+from functions.config import WORKING_DIRECTORY
 from functions.get_files_info import schema_get_files_info, get_files_info
 from functions.get_file_content import schema_get_file_content, get_file_content
 from functions.write_file import schema_write_file, write_file
@@ -21,7 +22,7 @@ def call_function(function_call_part, verbose=False):
     else:
         print(f" - Calling function: {function_name}")
     kwargs = dict(function_call_part.args) # Make a shallow copy of the existing args so as to not mutate the LLM version
-    kwargs["working_directory"] = "./calculator"
+    kwargs["working_directory"] = WORKING_DIRECTORY
     functions_mapping = {
         "get_files_info": get_files_info,
         "get_file_content": get_file_content,

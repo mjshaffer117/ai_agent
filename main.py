@@ -2,6 +2,7 @@ import os, sys
 
 from prompts import system_prompt
 from functions.call_function import available_functions, call_function
+from functions.config import MAX_ITERATIONS
 
 from dotenv import load_dotenv
 from google import genai
@@ -30,6 +31,9 @@ def main():
         )
     )
 
+    for candidate_response in response.candidates:
+        messages.append(candidate_response.content)
+
     if verbose:
         print(f'\nUser prompt: {user_prompt}')
         print(f'\nPrompt tokens: {response.usage_metadata.prompt_token_count}')
@@ -43,8 +47,44 @@ def main():
                 function_call_result = call_function(function_call, verbose)
                 if verbose:
                     print(f"-> {function_call_result.parts[0].function_response.response}")
+                function_responses = function_call_result.parts
+                messages.append(
+                    types.Content(
+                        role="user",
+                        parts=function_responses
+                    )
+                )
             except Exception as e:
                 return f'Error: {str(e)}'
+            
+            iteration = 0
+            while iteration < MAX_ITERATIONS:
+                response = client.models.generate_content(
+                    model='gemini-2.0-flash-001',
+                    contents=messages,
+                    config=types.GenerateContentConfig(
+                        tools=[available_functions],
+                        system_instruction=system_prompt
+                    )
+                )
+
+                if not response.function_calls and response.text:
+                    print(response.text)
+                    break
+
+                function_call_part = response.function_calls
+                if function_call_part:
+                    for function_call in function_call_part:
+                        function_call_result = call_function(function_call, verbose)
+                        if verbose:
+                            print(f"-> {function_call_result.parts[0].function_response.response}")
+                        messages.append(
+                            types.Content(
+                                role='user',
+                                parts=function_call_result.parts
+                            )
+                        )
+                iteration += 1
     else:
         print(response.text)
 
